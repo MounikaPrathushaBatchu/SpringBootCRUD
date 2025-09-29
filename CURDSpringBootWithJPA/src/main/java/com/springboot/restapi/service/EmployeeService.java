@@ -6,7 +6,7 @@ import com.springboot.restapi.entity.Employee;
 
 public interface EmployeeService {
 	
-	public String upsert(Employee employee);
+	public String saveOrUpdateEmployee(Employee employee);
 	
 	public List<Employee> getAllEmployees();
 	

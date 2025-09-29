@@ -16,8 +16,26 @@ public class EmployeeServiceImpl implements EmployeeService {
 	EmployeeRepository employeeRepository;
 
 	@Override
-	public String upsert(Employee employee) {
-		employeeRepository.save(employee);
+	public String saveOrUpdateEmployee(Employee employee) {
+		if(employee.getId() != null && employee.getId() > 0) {
+			Optional<Employee> employeeData = employeeRepository.findById(employee.getId());
+			
+			if(employeeData.isPresent()) {
+				Employee emp = employeeData.get();
+				emp.setName(employee.getName());
+				emp.setDepartment(employee.getDepartment());
+				emp.setSalary(employee.getSalary());
+				emp.setActive(employee.getActive());
+				emp.setEmail(employee.getEmail());
+				employeeRepository.save(emp);
+			} else {
+				throw new RuntimeException("Employee not found with id : "+employee.getId());
+			}
+		} else {
+			employee.setId(null);
+			employeeRepository.save(employee);
+		}
+		
 		return "Success";
 	}
 

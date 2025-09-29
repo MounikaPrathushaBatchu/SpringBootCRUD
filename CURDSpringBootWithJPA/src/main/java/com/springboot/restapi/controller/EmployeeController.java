@@ -26,9 +26,9 @@ public class EmployeeController {
 	@Autowired
 	EmployeeService employeeService;
 	
-	@PostMapping("/createEmployee")
-	public ResponseEntity<String> createEmployee(@RequestBody Employee employee){
-		String status = employeeService.upsert(employee);
+	@PostMapping("/saveOrUpdateEmployee")
+	public ResponseEntity<String> saveOrUpdateEmployee(@RequestBody Employee employee){
+		String status = employeeService.saveOrUpdateEmployee(employee);
 		return new ResponseEntity<String>(status, HttpStatus.CREATED);
 	}
 	
