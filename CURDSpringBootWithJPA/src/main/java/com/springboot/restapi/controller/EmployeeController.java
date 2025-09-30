@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.restapi.entity.Employee;
@@ -48,6 +49,12 @@ public class EmployeeController {
 	public ResponseEntity<String> deleteEmployee(@PathVariable int id) {
 		String status = employeeService.deleteEmployeeById(id);
 		return new ResponseEntity<String>(status,HttpStatus.OK);
+	}
+	
+	@GetMapping("/searchEmployeesByName")
+	public ResponseEntity<List<Employee>> searchEmployeesByName(@RequestParam String name){
+		List<Employee> employeeList = employeeService.searchEmployeesByName(name);
+		return new ResponseEntity<List<Employee>>(employeeList,HttpStatus.OK);
 	}
 	
 //	@GetMapping("/getAllEmployees")

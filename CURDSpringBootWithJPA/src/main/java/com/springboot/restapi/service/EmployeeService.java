@@ -13,4 +13,7 @@ public interface EmployeeService {
 	public Employee getEmployeeById(Integer id);
 	
 	public String deleteEmployeeById(Integer id);
+	
+	public List<Employee> searchEmployeesByName(String name);
+
 }
