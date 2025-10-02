@@ -48,12 +48,24 @@ public class EmployeeController {
 	@DeleteMapping("/deleteEmployee/{id}")
 	public ResponseEntity<String> deleteEmployee(@PathVariable int id) {
 		String status = employeeService.deleteEmployeeById(id);
-		return new ResponseEntity<String>(status,HttpStatus.OK);
+		return new ResponseEntity<String>(status, HttpStatus.OK);
+	}
+	
+	@PostMapping("/saveAllEmployees")
+	public ResponseEntity<List<Employee>> saveAllEmployees(@RequestBody List<Employee> employees){
+		List<Employee> savedEmployees = employeeService.saveAllEmployees(employees);
+		return new ResponseEntity<List<Employee>>(savedEmployees, HttpStatus.OK);
 	}
 	
 	@GetMapping("/searchEmployeesByName")
 	public ResponseEntity<List<Employee>> searchEmployeesByName(@RequestParam String name){
 		List<Employee> employeeList = employeeService.searchEmployeesByName(name);
+		return new ResponseEntity<List<Employee>>(employeeList,HttpStatus.OK);
+	}
+	
+	@GetMapping("/searchEmployees")
+	public ResponseEntity<List<Employee>> searchEmployees(@RequestParam(required = false) String name, @RequestParam(required = false) String department, @RequestParam(required = false) Integer active) {
+		List<Employee> employeeList = employeeService.searchEmployees(name, department, active);
 		return new ResponseEntity<List<Employee>>(employeeList,HttpStatus.OK);
 	}
 	

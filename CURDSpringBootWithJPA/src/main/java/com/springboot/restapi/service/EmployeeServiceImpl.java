@@ -1,5 +1,6 @@
 package com.springboot.restapi.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +21,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public String saveOrUpdateEmployee(Employee employee) {
 		
-		String empName = employee.getName().trim();
-		
+		String empName 	= employee.getName().trim();
+		long salary 	= employee.getSalary();
 		if(employeeRepository.existsByNameIgnoreCase(empName)) {
 			throw new RuntimeException("Employee name already exists : "+empName);
+		}
+		
+		if(salary < Employee.MIN_SALARY) {
+			throw new RuntimeException("Employee salary minimum is : "+Employee.MIN_SALARY+" but the given salary is : "+salary);
+		}
+		if(salary > Employee.MAX_SALARY) {
+			throw new RuntimeException("Employee salary sholud not execed : "+Employee.MAX_SALARY+" but the given salary is : "+salary);
+		}
+
+		if(empName.equals("")) {
+			throw new RuntimeException("Employee name should not be empty : "+empName);
 		} else {
 			if(employee.getId() != null && employee.getId() > 0) {
 				Optional<Employee> employeeData = employeeRepository.findById(employee.getId());
@@ -81,6 +93,37 @@ public class EmployeeServiceImpl implements EmployeeService {
 		}
 		
 	}
+	
+	@Override
+	public List<Employee> saveAllEmployees(List<Employee> employees) {
+		
+		List<Employee> processedEmployees = new ArrayList<Employee>();
+		
+		for(Employee emp : employees) {
+			
+			String empName 	= emp.getName().trim();
+			long salary 	= emp.getSalary();
+			if(employeeRepository.existsByNameIgnoreCase(empName)) {
+				throw new RuntimeException("Employee already exists with the name : "+empName);
+			}
+			
+			if(salary < Employee.MIN_SALARY) {
+				throw new RuntimeException("Employee salary minimum is : "+Employee.MIN_SALARY+" but the given salary is : "+salary);
+			}
+			if(salary > Employee.MAX_SALARY) {
+				throw new RuntimeException("Employee salary should not execed : "+Employee.MIN_SALARY+" but the given salary is : "+salary);
+			}
+			
+			if(empName.equals("")) {
+				throw new RuntimeException("Employee Name should not be empty");
+			}
+			
+			processedEmployees.add(emp);
+		}
+		employeeRepository.saveAll(processedEmployees);
+		
+		return null;
+	}
 
 	@Override
 	public List<Employee> searchEmployeesByName(String namePrefix) {
@@ -89,6 +132,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 		}
 		return employeeRepository.findByNameStartingWithIgnoreCase(namePrefix);
 	}
+
+	@Override
+	public List<Employee> searchEmployees(String name, String department, Integer active) {
+		return employeeRepository.searchEmployees(name, department, active);
+	}
+
 	
 //	@GetMapping("/getAllEmployees")
 //	public List<Employee> getAllEmployees() {

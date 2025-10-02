@@ -32,12 +32,15 @@ public class Employee {
 	}
 	 public Employee() {
 	 }
+	 
+	 public static final long MIN_SALARY = 10000L;
+	 public static final long MAX_SALARY = 200000L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(name = "name",length = 100)
+	@Column(name = "name",length = 15, nullable = false)
 	private String name;
 	
 	@Column(name = "salary")

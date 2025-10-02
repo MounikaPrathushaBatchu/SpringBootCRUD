@@ -6,14 +6,18 @@ import com.springboot.restapi.entity.Employee;
 
 public interface EmployeeService {
 	
-	public String saveOrUpdateEmployee(Employee employee);
+	String saveOrUpdateEmployee(Employee employee);
 	
-	public List<Employee> getAllEmployees();
+	List<Employee> getAllEmployees();
 	
-	public Employee getEmployeeById(Integer id);
+	Employee getEmployeeById(Integer id);
 	
-	public String deleteEmployeeById(Integer id);
+	String deleteEmployeeById(Integer id);
 	
-	public List<Employee> searchEmployeesByName(String name);
+	List<Employee> saveAllEmployees(List<Employee> employees);
+	
+	List<Employee> searchEmployeesByName(String name);
+	
+	List<Employee> searchEmployees(String name, String department, Integer active);
 
 }
