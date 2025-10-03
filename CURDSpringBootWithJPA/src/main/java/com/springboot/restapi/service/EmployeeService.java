@@ -18,6 +18,6 @@ public interface EmployeeService {
 	
 	List<Employee> searchEmployeesByName(String name);
 	
-	List<Employee> searchEmployees(String name, String department, Integer active);
+	List<Employee> searchEmployees(String name, Long deptId, Integer active);
 
 }

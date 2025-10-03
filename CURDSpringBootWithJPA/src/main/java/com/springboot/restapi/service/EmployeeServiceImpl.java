@@ -9,7 +9,9 @@ import javax.management.RuntimeErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.springboot.restapi.entity.Department;
 import com.springboot.restapi.entity.Employee;
+import com.springboot.restapi.repository.DepartmentRepository;
 import com.springboot.restapi.repository.EmployeeRepository;
 
 @Service
@@ -17,6 +19,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 	
 	@Autowired
 	EmployeeRepository employeeRepository;
+	
+	@Autowired
+	DepartmentRepository departmentRepository;
 
 	@Override
 	public String saveOrUpdateEmployee(Employee employee) {
@@ -33,35 +38,55 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if(salary > Employee.MAX_SALARY) {
 			throw new RuntimeException("Employee salary sholud not execed : "+Employee.MAX_SALARY+" but the given salary is : "+salary);
 		}
-
-		if(empName.equals("")) {
+		
+		if(empName.isEmpty()) {
 			throw new RuntimeException("Employee name should not be empty : "+empName);
+		}
+		
+		if(employee.getDepartment() == null) {
+			throw new RuntimeException("Department details are required!");
+		}
+		
+		Department department = null;
+		
+		if(employee.getDepartment().getDeptId() != null) {
+			
+			department = departmentRepository.findById(employee.getDepartment().getDeptId())
+					.orElseThrow(() -> new RuntimeException("Department not found with id : "+employee.getDepartment().getDeptId()));
+			
+		} else if(employee.getDepartment().getDeptName() != null) {
+			
+			department = departmentRepository.findByDeptNameStartingWithIgnoreCase(employee.getDepartment().getDeptName().trim())
+					.orElseGet(() -> departmentRepository.save(employee.getDepartment()));
+			
 		} else {
-			if(employee.getId() != null && employee.getId() > 0) {
-				Optional<Employee> employeeData = employeeRepository.findById(employee.getId());
+			throw new RuntimeException("Either Deprtment name or Depart Id has to provide.");
+		}
+
+		if(employee.getId() != null && employee.getId() > 0) {
+			Optional<Employee> employeeData = employeeRepository.findById(employee.getId());
+			
+			if(employeeData.isPresent()) {
 				
-				if(employeeData.isPresent()) {
-					
-					Employee emp = employeeData.get();
-					emp.setName(empName);
-					emp.setDepartment(employee.getDepartment().trim());
-					emp.setSalary(employee.getSalary());
-					emp.setActive(employee.getActive());
-					emp.setEmail(employee.getEmail().trim());
-					employeeRepository.save(emp);
-					
-				} else {
-					throw new RuntimeException("Employee not found with id : "+employee.getId());
-				}
+				Employee emp = employeeData.get();
+				emp.setName(empName);
+				emp.setDepartment(department);
+				emp.setSalary(employee.getSalary());
+				emp.setActive(employee.getActive());
+				emp.setEmail(employee.getEmail().trim());
+				employeeRepository.save(emp);
+				
 			} else {
-				employee.setId(null);
-				employee.setName(empName);
-				employee.setDepartment(employee.getDepartment().trim());
-				employee.setSalary(employee.getSalary());
-				employee.setActive(employee.getActive());
-				employee.setEmail(employee.getEmail().trim());
-				employeeRepository.save(employee);
+				throw new RuntimeException("Employee not found with id : "+employee.getId());
 			}
+		} else {
+			employee.setId(null);
+			employee.setName(empName);
+			employee.setDepartment(department);
+			employee.setSalary(employee.getSalary());
+			employee.setActive(employee.getActive());
+			employee.setEmail(employee.getEmail().trim());
+			employeeRepository.save(employee);
 		}
 		
 		return "Success";
@@ -134,8 +159,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public List<Employee> searchEmployees(String name, String department, Integer active) {
-		return employeeRepository.searchEmployees(name, department, active);
+	public List<Employee> searchEmployees(String name, Long deptId, Integer active) {
+		return employeeRepository.searchEmployees(name, deptId, active);
 	}
 
 	

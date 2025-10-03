@@ -1,10 +1,15 @@
 package com.springboot.restapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,20 +21,13 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="employee", schema = "employeedatabase")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 //@Data
 //@NoArgsConstructor
 //@AllArgsConstructor
 //@Builder
 public class Employee {
 	
-	public Employee(Integer id, String name, Long salary, String department, Integer active) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.salary = salary;
-		this.department = department;
-		this.active = active;
-	}
 	 public Employee() {
 	 }
 	 
@@ -46,8 +44,9 @@ public class Employee {
 	@Column(name = "salary")
 	private Long salary;
 	
-	@Column(name = "department",length = 50)
-	private String department;
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dept_id", nullable = false)
+    private Department department;
 	
 	@Column(name="active", nullable = false)
 //	@Builder.Default
@@ -58,7 +57,16 @@ public class Employee {
     @Email(message = "Invalid email format")
     @Size(max = 150, message = "Email must not exceed 150 characters")
 	private String email;
-
+	
+	public Employee(Integer id, String name, Long salary, Department department, Integer active, String email) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.salary = salary;
+		this.department = department;
+		this.active = active;
+		this.email = email;
+	}
 	public Integer getId() {
 		return id;
 	}
@@ -77,10 +85,10 @@ public class Employee {
 	public void setSalary(Long salary) {
 		this.salary = salary;
 	}
-	public String getDepartment() {
+	public Department getDepartment() {
 		return department;
 	}
-	public void setDepartment(String department) {
+	public void setDepartment(Department department) {
 		this.department = department;
 	}
 	public Integer getActive() {

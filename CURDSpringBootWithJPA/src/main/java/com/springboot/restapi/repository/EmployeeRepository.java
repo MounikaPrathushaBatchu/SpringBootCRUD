@@ -16,10 +16,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 	
 	boolean existsByNameIgnoreCase(String name);
 	
-	@Query("select e from Employee e "
-			+ "where (:name is null or e.name like concat(:name, '%'))"
-			+ "and (:department is null or e.department like concat(:department, '%'))"
-			+ "and (:active is null or e.active = :active)")
-	List<Employee> searchEmployees(@Param("name") String name, @Param("department") String department, @Param("active") Integer active);
+	@Query("select e from Employee e " +
+		       "join e.department d " +
+		       "where (:name is null or e.name like concat(:name, '%')) " +
+		       "and (:deptId is null or d.id = :deptId) " +
+		       "and (:active is null or e.active = :active)")
+		List<Employee> searchEmployees(@Param("name") String name, @Param("deptId") Long deptId, @Param("active") Integer active);
 
 }
