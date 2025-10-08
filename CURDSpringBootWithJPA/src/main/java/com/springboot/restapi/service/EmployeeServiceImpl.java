@@ -28,11 +28,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 		
 		String empName 	= employee.getName().trim();
 		long salary 	= employee.getSalary();
+		
+		if(employee.getDepartment() == null || (employee.getDepartment().getDeptId() == null && 
+				(employee.getDepartment().getDeptName() == null || employee.getDepartment().getDeptName().isBlank()))) {
+			throw new RuntimeException("Either Department name or Department Id has to be provided.");
+		}
+		
+		employee.setSalary(
+				Optional.ofNullable(salary)
+						.filter(s -> s > 0)
+						.orElse(12000L));
+		
 		if(employeeRepository.existsByNameIgnoreCase(empName)) {
 			throw new RuntimeException("Employee name already exists : "+empName);
 		}
 		
-		if(salary < Employee.MIN_SALARY) {
+		if(salary < Employee.MIN_SALARY && salary != 0) {
 			throw new RuntimeException("Employee salary minimum is : "+Employee.MIN_SALARY+" but the given salary is : "+salary);
 		}
 		if(salary > Employee.MAX_SALARY) {
@@ -132,7 +143,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 				throw new RuntimeException("Employee already exists with the name : "+empName);
 			}
 			
-			if(salary < Employee.MIN_SALARY) {
+			if(salary < Employee.MIN_SALARY && salary != 0) {
 				throw new RuntimeException("Employee salary minimum is : "+Employee.MIN_SALARY+" but the given salary is : "+salary);
 			}
 			if(salary > Employee.MAX_SALARY) {
